@@ -16,6 +16,7 @@ const ProductList = () => {
     items: [],
     categories: [],
   });
+  const [hasMoreData, setHasMoreData] = React.useState(true);
   const [currentPage, setCurrentPage] = React.useState(1);
   const { callEndpoint, loading } = useFetchWithLoader();
 
@@ -31,35 +32,40 @@ const ProductList = () => {
   const changePages = (page: number) => {
     if (page === Math.max(...visiblePages)) {
       setOffset(current => ++current);
+    } else if (page > 0 && page <= Math.min(...visiblePages)) {
+      setOffset(current => Math.max(0, current - 1));
     }
-    // else if (page === Math.min(...visiblePages)) {
-    //   setOffset(current => Math.max(1, current - 1));
-    // }
 
     setCurrentPage(page);
   };
 
   React.useEffect(() => {
+    if (!hasMoreData) return;
+
     const getProductsList = async (searchQuery: string) => {
       const response = await callEndpoint<Products>(
         getProducts(searchQuery, offset)
       );
 
       if (response.status === 200) {
-        setProducts(
-          currentState =>
-            ({
-              ...currentState,
-              items: [...currentState.items, ...(response.data?.items || [])],
-            } as Products)
-        );
+        if (response.data?.items.length === 0) {
+          setHasMoreData(false);
+        } else {
+          setProducts(
+            currentState =>
+              ({
+                ...currentState,
+                items: [...currentState.items, ...(response.data?.items || [])],
+              } as Products)
+          );
+        }
       }
     };
 
     if (searchQuery) {
       getProductsList(searchQuery);
     }
-  }, [callEndpoint, searchQuery, offset]);
+  }, [callEndpoint, searchQuery, offset, hasMoreData]);
 
   if (loading) {
     return <div>Loading...</div>;
