@@ -12,24 +12,26 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ categories }) => {
       aria-label="breadcrumb"
       className="mb-[10px] w-full"
     >
-      <ul className="flex items-end text-lg font-light opacity-80 gap-x-1">
+      <ul className="flex items-center font-light opacity-80 gap-x-1">
         <li>
           <button
             onClick={() => navigate(-1)}
-            className="text-[15px] text-meli-blue_link font-normal"
+            className="text-sm md:text-[15px] text-meli-blue_link font-normal"
           >
             Volver al listado
           </button>
         </li>
         <li>|</li>
         {categories.map(({ id, name }, index) => (
-          <li
-            key={id}
-            className="breadcrumb-item"
-          >
-            {name}
-            {index < categories.length - 1 && <span>&gt;</span>}
-          </li>
+          <>
+            <li
+              key={id}
+              className="text-xs md:text-[15px]"
+            >
+              {name}
+            </li>
+            <li>{index < categories.length - 1 && <span>&gt;</span>}</li>
+          </>
         ))}
       </ul>
     </nav>

@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router';
 import { Pagination } from '../../components';
 import ProductItem from '../../components/ProductItem/ProductItem';
 import useFetchWithLoader from '../../hooks/useFetchWithLoader';
+import usePagination from '../../hooks/usePagination';
 import { getProducts } from '../../services/products.service';
 import { Products } from '../../types/Products';
 
@@ -11,32 +12,22 @@ const PAGES_PER_BATCH = 5;
 const ProductList = () => {
   const [searchParams] = useSearchParams();
   const searchQuery = searchParams.get('search');
-  const [offset, setOffset] = React.useState(0);
+
   const [products, setProducts] = React.useState<Products>({
     items: [],
     categories: [],
   });
+  const { changePage, currentItems, currentPage, offset, visiblePages } =
+    usePagination({
+      itemsPerPage: ITEMS_PER_PAGE,
+      pagesPerBatch: PAGES_PER_BATCH,
+      data: products.items,
+    });
   const [hasMoreData, setHasMoreData] = React.useState(true);
-  const [currentPage, setCurrentPage] = React.useState(1);
   const { callEndpoint, loading } = useFetchWithLoader();
 
-  const visiblePages = Array.from(
-    { length: PAGES_PER_BATCH + 1 },
-    (_, i) => offset * PAGES_PER_BATCH + i + 1
-  );
-  const currentItems = products.items.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  );
-
-  const changePages = (page: number) => {
-    if (page === Math.max(...visiblePages)) {
-      setOffset(current => ++current);
-    } else if (page > 0 && page <= Math.min(...visiblePages)) {
-      setOffset(current => Math.max(0, current - 1));
-    }
-
-    setCurrentPage(page);
+  const onChangePages = (page: number) => {
+    changePage(page);
   };
 
   React.useEffect(() => {
@@ -67,9 +58,7 @@ const ProductList = () => {
     }
   }, [callEndpoint, searchQuery, offset, hasMoreData]);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  if (loading) return <div>Loading...</div>;
 
   return (
     <div className="flex flex-col items-center w-full h-[calc(100dvh_-_80px)]">
@@ -94,7 +83,8 @@ const ProductList = () => {
         <Pagination
           totalPages={visiblePages}
           currentPage={currentPage}
-          setCurrentPage={changePages}
+          setCurrentPage={onChangePages}
+          hasMoraData={hasMoreData}
         />
       )}
     </div>

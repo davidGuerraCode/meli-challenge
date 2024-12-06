@@ -13,6 +13,7 @@ const ProductDetails = () => {
   const location = useLocation();
   const seller = location.state?.seller;
   const installments = location.state?.installments;
+
   React.useEffect(() => {
     const getProductDetails = async (id: string) => {
       const response = await callEndpoint<ItemDetails>(getProduct(id));
@@ -117,4 +118,5 @@ const ProductDetails = () => {
     </section>
   );
 };
+
 export default ProductDetails;

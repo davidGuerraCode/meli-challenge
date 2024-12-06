@@ -3,6 +3,7 @@ import cn from '../../lib/cn';
 type PaginationProps = {
   currentPage: number;
   totalPages: number[];
+  hasMoraData: boolean;
   setCurrentPage: (page: number) => void;
 };
 
@@ -10,6 +11,7 @@ const Pagination: React.FC<PaginationProps> = ({
   currentPage,
   setCurrentPage,
   totalPages,
+  hasMoraData,
 }) => {
   return (
     <footer className="flex justify-center bg-[#f5f5f7] py-4 w-full mt-auto gap-x-2">
@@ -34,7 +36,7 @@ const Pagination: React.FC<PaginationProps> = ({
           {page}
         </button>
       ))}
-      {currentPage < totalPages.length && (
+      {hasMoraData && (
         <button onClick={() => setCurrentPage(currentPage + 1)}>
           Siguiente {'>'}
         </button>
