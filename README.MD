@@ -1,6 +1,6 @@
 # Meli Challenge
 
-Buscador de productos de Mercado Libre hecho en React y Nodejs.
+Buscador de productos de MeLi hecho en React y Nodejs.
 
 ## Scripts Disponibles
 
